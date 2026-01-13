@@ -1,0 +1,28 @@
+---
+import AdminLayout from '../../../../layouts/AdminLayout.astro';
+import VehicleForm from '../../../../admin/VehicleForm';
+import { supabase } from '../../../../lib/supabase';
+
+const { id } = Astro.params;
+
+if (!id) {
+    return Astro.redirect('/admin/veicoli');
+}
+
+const { data: vehicle, error } = await supabase
+    .from('veicoli')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+if (error || !vehicle) {
+    console.error('Error fetching vehicle for edit:', error);
+    return Astro.redirect('/admin/veicoli');
+}
+---
+
+<AdminLayout title={`Modifica ${vehicle.titolo}`}>
+    <div class="w-full py-6">
+        <VehicleForm initialData={vehicle} client:load />
+    </div>
+</AdminLayout>
